@@ -2,13 +2,15 @@ const express = require('express')
 const app = express()
 const userRouter = require('./routes/authRoutes')
 const { sequelize } = require('./models')
-
+const routerLogin = require('./routes/loginRoutes')
 
 require('dotenv').config()
 
 app.use(express.json())
 
 app.use('/users', userRouter)
+app.use('/login', routerLogin)
+
 
 sequelize.sync()
   .then(() => {

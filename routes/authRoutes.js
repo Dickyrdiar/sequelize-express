@@ -1,6 +1,5 @@
 const express = require('express')
 const userController = require('../controller/users.controller');
-const { LoginUsers } = require('../controller/auth.controller');
 
 const router = express.Router()
 
@@ -11,10 +10,7 @@ router.put('/:id', userController.updateUser)
 router.delete('/:id', userController.deleteUser)
 
 // authenticate
-router.post('/login', LoginUsers)
-
-// protected users
-
+// router.post('/login', loginController.login)
 
 
 module.exports = router

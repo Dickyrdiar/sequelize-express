@@ -1,20 +1,16 @@
 const jwt = require('jsonwebtoken')
-const { User } = require('../models')
+require('dotenv').config()
 
-const JWT_TOKEN = process.env.JWT_TOKEN
+const authMiddleware = (req, res, next) => {
+  const token = req.headers('authorization')
+  if (!token) return res.status(403).json({ message: 'token not provide' })
 
-exports.authenticateJWT = (req, res) => {
-  const token  = req.header('Authorization')?.replace('Bearer', '')
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ message: 'failed authenticate token' })
 
-  if (!token) {
-    return res.status(403).json({ message: 'no token provide' })
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_TOKEN)
-    req.user = decoded;
+    req.userId = decoded.userId
     next()
-  } catch (error) {
-    return res.status(401).json({ message: 'invalid or expired token' })
-  }
+  })
 }
+
+module.exports = authMiddleware

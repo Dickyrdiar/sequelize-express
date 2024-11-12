@@ -1,39 +1,28 @@
-const bycript = require('bcryptjs')
+const user = require("../models").User
+const { bcrypt } = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { User } = require('../models')
 
-const JWT_TOKEN = process.env.JWT_TOKEN
-
-exports.LoginUsers = async (req, res) => {
+exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body
+    const users = await user.findOne({ where: { email } });
+    if (!users) return res.status(404).json({ message: 'user not found' })
 
-    const user = await User.findOne({ where: { email } })
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" })
-    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return res.status(401).json({ message: 'invalud password' })
 
-    const isMatch = await bycript.compare(password, user.password)
-    if (!isMatch) {
-      res.status(400).json({ message: 'Invalid email or password' })
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, username: user.username },
-      JWT_TOKEN,
-      { expiresIn: '1h' }
-    )
-
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expresIn: '1h' })
+    console.log("token", token)
     res.json({
-      message: 'Login successfull',
-      token,
+      message: 'Login success', 
+      token, 
       user: {
-        id: user.id,
-        username: user.username,
-        email: user.email
+        email: user.email,
+        username: user.username
       }
     })
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.log("error", error)
+    res.status(500).json({ error: error.messahge })
   }
 }

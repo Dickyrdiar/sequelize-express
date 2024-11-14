@@ -4,6 +4,7 @@ const userRouter = require('./routes/authRoutes')
 const { sequelize } = require('./models')
 const routerLogin = require('./routes/loginRoutes')
 const authMiddleWare = require('./middleware/auth.middleware')
+const routerQuestion = require('./routes/questionRoutes')
 
 require('dotenv').config()
 
@@ -14,6 +15,7 @@ app.use('/auth', routerLogin)
 app.get('/protected', authMiddleWare, (req, res) => {
   res.json({ message: 'This is protected route' })
 })
+app.use('/questions', routerQuestion)
 
 sequelize.sync()
   .then(() => {

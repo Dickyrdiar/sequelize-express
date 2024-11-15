@@ -1,11 +1,11 @@
 const express = require('express')
-const { newQuestion, getAllQuestion, getQuestionById, deleteQuestion } = require('../controller/question.controller')
+const QuestionController = require('../controller/question.controller')
 
 const routerQuestion = express.Router()
 
-routerQuestion.get('/', getAllQuestion)
-routerQuestion.post('/', newQuestion)
-routerQuestion.get('/:id', getQuestionById)
-routerQuestion.delete('/:id', deleteQuestion)
+routerQuestion.get('/', QuestionController.getAllQuestion)
+routerQuestion.post('/', QuestionController.createQuestion)
+routerQuestion.get('/:id', QuestionController.getQuestionById)
+routerQuestion.delete('/:id', QuestionController.deleteQuestion)
 
 module.exports = routerQuestion

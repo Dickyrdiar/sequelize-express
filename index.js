@@ -5,6 +5,7 @@ const { sequelize } = require('./models')
 const routerLogin = require('./routes/loginRoutes')
 const authMiddleWare = require('./middleware/auth.middleware')
 const routerQuestion = require('./routes/questionRoutes')
+const protectedRouter = require('./routes/protectedRoutes')
 
 require('dotenv').config()
 
@@ -12,10 +13,13 @@ app.use(express.json())
 
 app.use('/users', userRouter)
 app.use('/auth', routerLogin)
-app.get('/protected', authMiddleWare, (req, res) => {
-  res.json({ message: 'This is protected route' })
-})
+// app.get('/protected', authMiddleWare, (req, res) => {
+//   res.json({ message: 'This is protected route' })
+// })
 app.use('/questions', routerQuestion)
+
+// protected 
+app.use('/protected', authMiddleWare, protectedRouter)
 
 sequelize.sync()
   .then(() => {

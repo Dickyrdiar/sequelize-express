@@ -11,7 +11,8 @@ exports.login = async (req, res) => {
     const isPasswordValid = await compare(password, users.password)
     if (isPasswordValid) return res.status(401).json({ message: 'invalid password' })
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' })
+    const token = jwt.sign({ userId: users.id }, process.env.JWT_SECRET, { expiresIn: '1h' })
+
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({
       message: 'Login success', 

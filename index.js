@@ -11,12 +11,9 @@ require('dotenv').config()
 
 app.use(express.json())
 
-app.use('/users', userRouter)
 app.use('/auth', routerLogin)
-// app.get('/protected', authMiddleWare, (req, res) => {
-//   res.json({ message: 'This is protected route' })
-// })
-app.use('/questions', routerQuestion)
+app.use('/users', authMiddleWare,  userRouter)
+app.use('/questions', authMiddleWare, routerQuestion )
 
 // protected 
 app.use('/protected', authMiddleWare, protectedRouter)

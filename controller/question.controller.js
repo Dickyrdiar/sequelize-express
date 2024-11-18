@@ -8,8 +8,6 @@ exports.createQuestion = async (req, res) => {
       content,
       userId: req.user.id
     })
-
-    console.log("check id", User.id)
     res.status(201).json(newQuestion)
   } catch (error) {
     console.log("check id", User.id)

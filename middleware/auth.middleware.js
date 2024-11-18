@@ -22,8 +22,6 @@ const authMiddleware = (req, res, next) => {
     // Attach the user ID from the token payload to the request object
     req.user = { id: decoded.userId }; // Ensure `userId` matches your token payload structure
 
-    console.log("Decoded token:", decoded.userId);
-
     // Proceed to the next middleware or controller
     next();
   } catch (error) {

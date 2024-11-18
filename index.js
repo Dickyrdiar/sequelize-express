@@ -6,10 +6,12 @@ const routerLogin = require('./routes/loginRoutes')
 const authMiddleWare = require('./middleware/auth.middleware')
 const routerQuestion = require('./routes/questionRoutes')
 const protectedRouter = require('./routes/protectedRoutes')
+const  cors  = require('cors')
 
 require('dotenv').config()
 
 app.use(express.json())
+app.use(cors())
 
 app.use('/auth', routerLogin)
 app.use('/users', authMiddleWare,  userRouter)

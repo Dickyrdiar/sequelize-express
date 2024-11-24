@@ -26,10 +26,5 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Question',
   });
 
-  // model relation
-  // Question.associate = (models) => {
-   
-  // }
-
   return Question;
 };

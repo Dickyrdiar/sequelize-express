@@ -15,7 +15,6 @@ exports.createQuestion = async (req, res) => {
 
     res.status(201).json(newQuestion)
   } catch (error) {
-    console.log("check id", User.id)
     res.status(400).json({ error: error.message })
   }
 }

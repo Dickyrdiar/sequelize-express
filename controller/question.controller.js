@@ -1,16 +1,18 @@
 const { Question, User } = require('../models')
 
 exports.createQuestion = async (req, res) => {
-  const content = req.body
+  const { question, desc } = req.body
 
   try {
     const newQuestion = await Question.create({
-      content,
+      question,
+      desc,
       userId: req.user.id
     })
+
+    console.log("check request", newQuestion, req.user.id)
     res.status(201).json(newQuestion)
   } catch (error) {
-    console.log("check id", User.id)
     res.status(400).json({ error: error.message })
   }
 }

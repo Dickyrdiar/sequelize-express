@@ -1,11 +1,14 @@
 'use strict';
 
-const { User } = require('../models')
+const { User } = require('../models');
+const redis = require('../shared/redisClient')
 
 exports.createUser = async (req, res) => {
   try {
     const newUser = await User.create(req.body)
-    console.log("users", newUser)
+    
+    await redis.del('user:all')
+
     res.status(201).json(newUser)
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -13,6 +16,8 @@ exports.createUser = async (req, res) => {
 }
 
 exports.getAllUsers = async (req, res) => {
+  const cacheKey = ''
+
   try {
     const users = await User.findAll()
     console.log(users, "all users")

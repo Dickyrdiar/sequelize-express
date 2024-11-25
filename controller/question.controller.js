@@ -29,9 +29,13 @@ exports.getAllQuestion = async (req, res) => {
       return res.status(200).json(JSON.parse(cacheQuestion))
     }
 
-    const questions = await Question.findAll()
+    const questions = await Question.findAll({
+      include: { model: User, as:'user', attributes: ['id', 'firstName', 'lastName'] }
+    })
+
     await redis.set(cacheKey, JSON.stringify(questions), 'EX', 3600)
     res.status(200).json(questions)
+    
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon index.js"
   },
   "keywords": [],
@@ -25,5 +25,9 @@
     "redis": "^4.7.0",
     "sequelize": "^6.37.5",
     "sequelize-redis-cache": "^2.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

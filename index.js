@@ -7,6 +7,7 @@ const authMiddleWare = require('./middleware/auth.middleware')
 const routerQuestion = require('./routes/questionRoutes')
 const protectedRouter = require('./routes/protectedRoutes')
 const  cors  = require('cors')
+const routerComment = require('./routes/commentRoutes')
 
 require('dotenv').config()
 
@@ -14,8 +15,9 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/auth', routerLogin)
-app.use('/users', authMiddleWare,  userRouter)
+app.use('/users', authMiddleWare,  userRouter )
 app.use('/questions', authMiddleWare, routerQuestion )
+app.use('/comment', authMiddleWare, routerComment )
 
 // protected 
 app.use('/protected', authMiddleWare, protectedRouter)

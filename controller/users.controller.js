@@ -16,9 +16,14 @@ exports.createUser = async (req, res) => {
 }
 
 exports.getAllUsers = async (req, res) => {
-  const cacheKey = ''
+  const cacheKey = 'user:all'
 
   try {
+    const cacheUsers = await redis.get(cacheKey)
+    if (cacheKey) {
+      return res.status(200).json(JSON.parse(cacheUsers))
+    }
+
     const users = await User.findAll()
     console.log(users, "all users")
     res.json(users)

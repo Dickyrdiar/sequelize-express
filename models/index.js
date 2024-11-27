@@ -32,6 +32,7 @@ fs
     db[model.name] = model;
   });
 
+
 // Memanggil fungsi associate pada setiap model jika ada
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
@@ -42,8 +43,5 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Pastikan file model tersedia sebelum menambahkan model secara manual
-// Uncomment dan ganti './note' dengan jalur file model jika model harus diimpor secara manual
-// db.Note = require('./note')(sequelize, Sequelize);
 
 module.exports = db;

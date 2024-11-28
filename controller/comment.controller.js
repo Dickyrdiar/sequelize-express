@@ -1,15 +1,24 @@
 'use strict'
 
-const {Comments, User}  = require("../models")
+const {Comments, Question}  = require("../models")
 const redis = require("../shared/redisClient")
 
 exports.createComment = async (req, res) => {
-  const { content } = req.body 
-
   try {
+    const { content } = req.body 
+    const { questionId } = req.params
+
+    const questionExist = await Question.findByPk(questionId)
+    console.log("exist", questionExist)
+
+    if (!questionExist) {
+      return res.status(404).json({ error: 'Question not found' })
+    }
+
     const newComment = await Comments.create({
       content,
-      userId: req.user.id
+      questionId,
+      userId: req.user.id,
     }) 
 
     await redis.del('comment:all')

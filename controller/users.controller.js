@@ -1,6 +1,6 @@
 'use strict';
 
-const { User } = require('../models');
+const { User, Question } = require('../models');
 const redis = require('../shared/redisClient')
 
 exports.createUser = async (req, res) => {
@@ -34,7 +34,15 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const foundUser = await User.findByPk(req.params.id)
+    const foundUser = await User.findByPk(req.params.id, {
+      include: [
+        {
+          model: Question,
+          as: 'questions',
+          attributes: ['id', 'question', 'desc']
+        }
+      ]
+    })
     if (!foundUser) return res.status(404).json({ error: 'User not found' })
     res.json(foundUser)
   } catch (error) {

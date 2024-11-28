@@ -1,4 +1,4 @@
-const { Question, User } = require('../models')
+const { Question, User, Comments } = require('../models')
 const redis = require('../shared/redisClient')
 
 exports.createQuestion = async (req, res) => {
@@ -30,7 +30,7 @@ exports.getAllQuestion = async (req, res) => {
     }
 
     const questions = await Question.findAll({
-      include: { model: User, as:'user', attributes: ['id', 'firstName', 'lastName'] }
+      include: { model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'email'] }
     })
 
     await redis.set(cacheKey, JSON.stringify(questions), 'EX', 3600)
@@ -42,17 +42,29 @@ exports.getAllQuestion = async (req, res) => {
 }
 
 exports.getQuestionById = async (req, res) => {
-  const cachekey = `queation:${id}`
+  // const cachekey = `question:${id}`
 
   try {
     const foundQuestion = await Question.findOne({
-      where: { id: req.params.id },
-      include: { model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'email'] }
-    })
+      id: req.params.id,
+      include: 
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email']
+        },
+        // {
+        //   model: Comments,
+        //   as: 'comments',
+        //   attributes: ['id', 'content']
+        // }
+      
+    });
     if (!foundQuestion) return res.status(400).json({ error: "User not Found" })
 
     res.json(foundQuestion)
   } catch (error) {
+    console.log("err", error)
     res.status(500).json({ error: error.messsage })
   }
 }

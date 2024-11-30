@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Question.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
-      Question.hasMany(models.Comments, { foreignKey: 'Question', as: 'comments' });
+      Question.hasMany(models.Comments, { foreignKey: 'questionId', as: 'comments' });
     }
   }
   Question.init({
@@ -22,16 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     }, 
-    questionId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: 'questions', // Link to `questions` table
-        key: 'id'
-      },
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    },
   },
   {
     sequelize,

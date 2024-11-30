@@ -6,9 +6,10 @@ const redis = require("../shared/redisClient")
 exports.createComment = async (req, res) => {
   try {
     const { content } = req.body 
-    const { questionId } = req.params
+    // const { questionId } = req.params
+    const { id } = req.params.id
 
-    const questionExist = await Question.findByPk(questionId)
+    const questionExist = await Question.findByPk()
     console.log("exist", questionExist)
 
     if (!questionExist) {
@@ -17,7 +18,7 @@ exports.createComment = async (req, res) => {
 
     const newComment = await Comments.create({
       content,
-      questionId,
+      id,
       userId: req.user.id,
     }) 
 

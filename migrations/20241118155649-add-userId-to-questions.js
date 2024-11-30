@@ -3,9 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn('Questions', 'userId', {
+    await queryInterface.addColumn('Comments', 'userId', {
       type: Sequelize.INTEGER,
-      allowNull: false, // Ensure this matches your model
+      allowNull: true, // Ensure this matches your model
       references: {
         model: 'Users',
         key: 'id',
@@ -13,6 +13,7 @@ module.exports = {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     })
+
 
     /**
      * Add altering commands here.
@@ -23,7 +24,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('Questions', 'userId')
+    await queryInterface.removeColumn('Comments', 'userId')
     // await queryInterface.references('Questions', 'question')
     // await queryInterface.references('Questions', 'desc')
     /**

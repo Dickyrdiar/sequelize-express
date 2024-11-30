@@ -30,13 +30,27 @@ exports.getAllQuestion = async (req, res) => {
     }
 
     const questions = await Question.findAll({
-      include: { model: User, as: 'user', attributes: ['id', 'firstName', 'lastName', 'email'] }
+      include: [
+        { 
+          model: User, 
+          as: 'user', 
+          attributes: ['id', 'firstName', 'lastName', 'email'] 
+        },
+
+        {
+          model: Comments,
+          as: 'comments',
+          attributes: ['id', 'content']
+        },
+      ],
+      
     })
 
     await redis.set(cacheKey, JSON.stringify(questions), 'EX', 3600)
     res.status(200).json(questions)
     
   } catch (error) {
+    console.log("error", error)
     res.status(500).json({ error: error.message })
   }
 }
@@ -47,17 +61,18 @@ exports.getQuestionById = async (req, res) => {
   try {
     const foundQuestion = await Question.findOne({
       id: req.params.id,
-      include: 
+      include: [
         {
           model: User,
           as: 'user',
           attributes: ['id', 'firstName', 'lastName', 'email']
         },
-        // {
-        //   model: Comments,
-        //   as: 'comments',
-        //   attributes: ['id', 'content']
-        // }
+        {
+          model: Comments,
+          as: 'comments',
+          attributes: ['id', 'content']
+        },
+      ]
       
     });
     if (!foundQuestion) return res.status(400).json({ error: "User not Found" })

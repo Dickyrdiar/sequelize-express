@@ -22,10 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    // Comments: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false
-    // }
   },
   {
     sequelize,

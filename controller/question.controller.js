@@ -1,4 +1,5 @@
 const { Question, User, Comments } = require('../models')
+const { Op } = require('sequelize')
 const redis = require('../shared/redisClient')
 
 exports.createQuestion = async (req, res) => {
@@ -19,6 +20,44 @@ exports.createQuestion = async (req, res) => {
   }
 }
 
+exports.searchQuestion = async (req, res) => {
+  const { paramsSearch } = req.params
+
+  try {
+    console.log("params", paramsSearch)
+
+    const responseSearch = await Question.findOne({
+      where: {
+        question: { [Op.like]: `%${paramsSearch}` }
+      },
+
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email']
+        }, 
+
+        {
+          model: Comments,
+          as: 'comments',
+          attributes: ['id', 'content']
+        }
+      ]
+    })
+
+    if (!responseSearch) {
+      return res.status(404).json({ message: 'No Matching question found' })
+    }
+
+    console.log(responseSearch)
+    res.status(200).json(responseSearch)
+  } catch (err) {
+    console.log("error", err)
+    res.status(500).json({ error: err.message })
+  }
+}
+
 exports.getAllQuestion = async (req, res) => {
   const cacheKey = 'questions:all'
 
@@ -31,19 +70,24 @@ exports.getAllQuestion = async (req, res) => {
 
     const questions = await Question.findAll({
       include: [
-        { 
-          model: User, 
-          as: 'user', 
-          attributes: ['id', 'firstName', 'lastName', 'email'] 
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email'], // User details
         },
-
         {
           model: Comments,
           as: 'comments',
-          attributes: ['id', 'content']
+          attributes: ['id', 'content'],
+          include: [
+            {
+              model: User, // Optionally, include commenter details
+              as: 'user',
+              attributes: ['id', 'firstName', 'lastName'],
+            },
+          ], // Comment details
         },
       ],
-      
     })
 
     await redis.set(cacheKey, JSON.stringify(questions), 'EX', 3600)
@@ -65,12 +109,19 @@ exports.getQuestionById = async (req, res) => {
         {
           model: User,
           as: 'user',
-          attributes: ['id', 'firstName', 'lastName', 'email']
+          attributes: ['id', 'firstName', 'lastName', 'email'], // Include user details
         },
         {
           model: Comments,
           as: 'comments',
-          attributes: ['id', 'content']
+          attributes: ['id', 'content', 'userId'], // Include comments details
+          include: [
+            {
+              model: User, // Optionally, include commenter details
+              as: 'user',
+              attributes: ['id', 'firstName', 'lastName'],
+            },
+          ],
         },
       ]
       

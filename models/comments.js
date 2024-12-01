@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     content: DataTypes.STRING,
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    }
+      allowNull: true
+    },
   }, {
     sequelize,
     modelName: 'Comments',

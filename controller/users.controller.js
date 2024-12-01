@@ -1,6 +1,6 @@
 'use strict';
 
-const { User, Question } = require('../models');
+const { User, Question, Comments } = require('../models');
 const redis = require('../shared/redisClient')
 
 exports.createUser = async (req, res) => {
@@ -24,7 +24,29 @@ exports.getAllUsers = async (req, res) => {
       return res.status(200).json(JSON.parse(cacheUsers))
     }
 
-    const users = await User.findAll()
+    const users = await User.findAll({
+      include: [
+        {
+          model: Question,
+          as: 'questions',
+          attributes: ['id', 'question', 'desc'],
+          include: [
+            {
+              model: Comments,
+              as: 'comments',
+              attributes: ['id', 'content'],
+              include: [
+                {
+                  model: User,
+                  as: 'user',
+                  attributes: ['id', 'firstName', 'lastName']
+                }
+              ]
+            }
+          ]
+        }, 
+      ]
+    })
     console.log(users, "all users")
     res.json(users)
   } catch (error) {
@@ -39,12 +61,31 @@ exports.getUserById = async (req, res) => {
         {
           model: Question,
           as: 'questions',
-          attributes: ['id', 'question', 'desc']
-        }
+          attributes: ['id', 'question', 'desc'],
+          include: [
+            {
+              model: Comments,
+              as: 'comments',
+              attributes: ['id', 'content'],
+              include: [
+                {
+                  model: User,
+                  as: 'user',
+                  attributes: ['id', 'firstName', 'lastName']
+                }
+              ]
+            }
+          ]
+        }, 
       ]
     })
+    console.log("found user",  delete foundUser.password)
+
     if (!foundUser) return res.status(404).json({ error: 'User not found' })
     res.json(foundUser)
+    delete foundUser.password
+
+    return foundUser
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

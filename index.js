@@ -17,7 +17,7 @@ app.use(cors())
 app.use('/auth', routerLogin)
 app.use('/users', authMiddleWare,  userRouter )
 app.use('/questions', authMiddleWare, routerQuestion )
-app.use('/questions/:id/comment', authMiddleWare, routerComment )
+app.use('/questions/:questionId', authMiddleWare, routerComment )
 
 // protected 
 app.use('/protected', authMiddleWare, protectedRouter)

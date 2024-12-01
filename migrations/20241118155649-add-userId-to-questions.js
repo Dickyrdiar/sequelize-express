@@ -5,7 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('Comments', 'userId', {
       type: Sequelize.INTEGER,
-      allowNull: true, // Ensure this matches your model
+      allowNull: false, // Ensure this matches your model
       references: {
         model: 'Users',
         key: 'id',

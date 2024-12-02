@@ -12,6 +12,7 @@ exports.login = async (req, res) => {
     if (isPasswordValid) return res.status(401).json({ message: 'invalid password' })
 
     const token = jwt.sign({ userId: users.id }, process.env.JWT_SECRET, { expiresIn: '1h' })
+    const refreshToken = jwt.sign({ userId: users.id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({
@@ -21,11 +22,30 @@ exports.login = async (req, res) => {
         email: users.email,
         firstName: users.firstName,
         lastName: users.lastName
-      }
+      },
+      refreshToken
     })
   } catch (error) {
     console.log("error", error)
     res.status(500).json({ error: error.messahge })
+  }
+}
+
+exports.TokenRefresh = async (req, res, next) => {
+  const { refreshToken } = req.headers['authorization'];
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Refresh toke is required' })
+  }
+
+  try {
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET)
+    const accessToken = jwt.sign({ id: decoded.id, userName: decoded.userName })
+    res.json({ accessToken })
+  } catch (err) {
+    console.error("refresh token error", err.message)
+    return res.status(403).json({ message: 'Invalid or expired refresh token' })
   }
 }
 

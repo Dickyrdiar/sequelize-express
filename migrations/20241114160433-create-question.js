@@ -8,6 +8,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
+        // defaultValue: Sequelize.UUIDV4,
       },
       question: {
         type: Sequelize.STRING

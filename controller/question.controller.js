@@ -1,5 +1,5 @@
-const { Question, User, Comments } = require('../models')
-const { Op } = require('sequelize')
+const { Question, User, Comments, Tags } = require('../models')
+const { Op, where } = require('sequelize')
 const redis = require('../shared/redisClient')
 
 exports.createQuestion = async (req, res) => {
@@ -24,7 +24,6 @@ exports.searchQuestion = async (req, res) => {
   const { paramsSearch } = req.params
 
   try {
-    console.log("params", paramsSearch)
 
     const responseSearch = await Question.findOne({
       where: {
@@ -50,7 +49,7 @@ exports.searchQuestion = async (req, res) => {
       return res.status(404).json({ message: 'No Matching question found' })
     }
 
-    console.log(responseSearch)
+    console.log(responseSearch.find(req.user.id))
     res.status(200).json(responseSearch)
   } catch (err) {
     console.log("error", err)
@@ -60,6 +59,7 @@ exports.searchQuestion = async (req, res) => {
 
 exports.getAllQuestion = async (req, res) => {
   const cacheKey = 'questions:all'
+  const userId = req.user.id
 
   try {
     const cacheQuestion = await redis.get(cacheKey)
@@ -92,7 +92,7 @@ exports.getAllQuestion = async (req, res) => {
 
     await redis.set(cacheKey, JSON.stringify(questions), 'EX', 3600)
     res.status(200).json(questions)
-    
+    console.log("find question", questions)
   } catch (error) {
     console.log("error", error)
     res.status(500).json({ error: error.message })

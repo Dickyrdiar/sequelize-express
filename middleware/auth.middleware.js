@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers['authorization']; // Use lowercase 'authorization'
+  const authHeader = req.headers['authorization'];
 
   // Check if the authorization header is provided
   if (!authHeader) {
@@ -26,6 +26,10 @@ const authMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     console.error("JWT verification error:", error.message);
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: 'Token Expired, please refresh your token' })
+    }
     return res.status(401).json({ message: 'Unauthorized: Invalid or expired token' });
   }
 };

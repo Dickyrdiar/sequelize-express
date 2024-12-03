@@ -8,27 +8,26 @@ module.exports = {
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     * 
      */
-    const tableDescription = await queryInterface.describeTable('Comments');
 
-    if (!tableDescription.userId) {
-      await queryInterface.addColumn('Comments', 'userId', {
+    const describeTable = await queryInterface.describeTable('Comments')
+
+    if (!describeTable.userId) {
+      await queryInterface.addColumn('Tags', 'userId', {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
-          key: 'id',
-        },
+          model: 'Tags',
+          key: 'id'
+        }, 
   
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
-      })
+      }) 
     }
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('Comments', 'userId')
     /**
      * Add reverting commands here.
      *
@@ -36,6 +35,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
 
-
+    await queryInterface.removeColumn('Tags', 'userId')
   }
 };

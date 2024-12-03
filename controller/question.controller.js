@@ -1,24 +1,52 @@
-const { Question, User, Comments, Tags } = require('../models')
+const { Question, User, Comments, Tags, sequelize } = require('../models')
 const { Op, where } = require('sequelize')
 const redis = require('../shared/redisClient')
 
 exports.createQuestion = async (req, res) => {
-  const { question, desc } = req.body
+  const { question, desc, tag } = req.body;
+
+  // Validate `tag`
+  if (Array.isArray(tag)) {
+    return res.status(400).json({ error: 'tags should be an array' });
+  }
+
+  const transaction = await sequelize.transaction();
 
   try {
-    const newQuestion = await Question.create({
-      question,
-      desc,
-      userId: req.user.id
-    })
+    const tagIds = await Promise.all(
+      (tag || []).map(async (tagName) => {
+        const [tag] = await Tags.findOrCreate({
+          where: { tag: tagName },
+          defaults: { tag: tagName }, // Ensure correct property name
+          transaction,
+        });
+    
+        return tag.id;
+      })
+    );
 
-    await redis.del('question:all')
+    const newQuestion = await Question.create(
+      {
+        question,
+        desc,
+        userId: req.user.id,
+      },
+      { transaction }
+    );
 
-    res.status(201).json(newQuestion)
+    await newQuestion.setTags(tagIds, { transaction });
+
+    await redis.del('question:all');
+    await transaction.commit();
+
+    res.status(201).json(newQuestion);
   } catch (error) {
-    res.status(400).json({ error: error.message })
+    // await transaction.rollback(); // Rollback on error
+    console.log("error", error)
+    res.status(400).json({ error: error.message });
   }
-}
+};
+
 
 exports.searchQuestion = async (req, res) => {
   const { paramsSearch } = req.params

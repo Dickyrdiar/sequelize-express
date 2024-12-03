@@ -10,17 +10,21 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
 
-    await queryInterface.addColumn('Comments', 'questionId', {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Questions',
-        key: 'id'
-      }, 
+    const tableCommentDescription = await queryInterface.describeTable('Comments')
 
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    })
+    if (!tableCommentDescription.questionId) {
+      await queryInterface.addColumn('Comments', 'questionId', {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Questions',
+          key: 'id'
+        }, 
+  
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      })
+    }
   },
 
   async down (queryInterface, Sequelize) {

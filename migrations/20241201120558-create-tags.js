@@ -13,6 +13,10 @@ module.exports = {
       tag: {
         type: Sequelize.STRING
       },
+      relatedTags: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

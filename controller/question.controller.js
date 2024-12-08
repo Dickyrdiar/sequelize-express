@@ -1,30 +1,18 @@
-const { Question, User, Comments, Tags, sequelize } = require('../models')
-const { Op, where } = require('sequelize')
-const redis = require('../shared/redisClient')
+const { Question, User, Comments, sequelize } = require('../models')
+const { Op } = require('sequelize')
+const redis = require('../shared/redisClient');
+const { createTags } = require('../utils/CreateTags/createTags');
 
 exports.createQuestion = async (req, res) => {
-  const { question, desc, tag } = req.body;
-
-  // Validate `tag`
-  if (Array.isArray(tag)) {
-    return res.status(400).json({ error: 'tags should be an array' });
-  }
+  const { question, desc, tags } = req.body;
 
   const transaction = await sequelize.transaction();
 
   try {
-    const tagIds = await Promise.all(
-      (tag || []).map(async (tagName) => {
-        const [tag] = await Tags.findOrCreate({
-          where: { tag: tagName },
-          defaults: { tag: tagName }, // Ensure correct property name
-          transaction,
-        });
     
-        return tag.id;
-      })
-    );
-
+    // const tagIds = await createTags(tags || [], transaction)
+    const tagIds = await createTags(tags, transaction)
+    
     const newQuestion = await Question.create(
       {
         question,
@@ -33,8 +21,10 @@ exports.createQuestion = async (req, res) => {
       },
       { transaction }
     );
-
-    await newQuestion.setTags(tagIds, { transaction });
+    
+    await newQuestion.addTags(tagIds, { transaction })
+    await transaction.commit()
+    
 
     await redis.del('question:all');
     await transaction.commit();

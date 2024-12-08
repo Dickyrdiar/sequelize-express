@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Question.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
       Question.hasMany(models.Comments, { foreignKey: 'questionId', as: 'comments' });
+      Question.associate = (models) => {
+        Question.belongsToMany(models.Tags, { through: 'QuestionTags' })
+      }
     }
   }
   Question.init({

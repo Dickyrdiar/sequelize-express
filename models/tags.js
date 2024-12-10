@@ -14,15 +14,18 @@ module.exports = (sequelize, DataTypes) => {
 
       Tags.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
       Tags.associate = (models) => {
-        Tags.belongsToMany(models.Questions, { through: 'QuestionTags' })
+        Tags.belongsToMany(models.Questions, { through: 'Tags' })
       }
     }
   }
   Tags.init({
-    tag: DataTypes.STRING
+    tag: DataTypes.STRING,
+    allowNull: false, // Correct placement of allowNull
   }, {
     sequelize,
     modelName: 'Tags',
+    // tableName: 'tags',
+    // timestamps: false
   });
   return Tags;
 };

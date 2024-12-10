@@ -13,7 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.Question, { foreignKey: 'userId', as: 'questions' })
       User.hasMany(models.Comments, { foreignKey: 'userId', as: 'comments' })
-      User.hasMany(models.Tags, { foreignKey: 'userId', as: 'tags' })
+      // 
+      User.associate = (models) => {
+        User.hasMany(models.Tags, { foreignKey: 'userId', as: 'tags' })
+      }
     }
   }
   User.init({

@@ -14,16 +14,19 @@ module.exports = (sequelize, DataTypes) => {
       Question.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
       Question.hasMany(models.Comments, { foreignKey: 'questionId', as: 'comments' });
       Question.associate = (models) => {
-        Question.belongsToMany(models.Tags, { through: 'QuestionTags' })
+        Question.belongsToMany(models.Tags, { through: 'Tags' })
       }
     }
   }
   Question.init({
-    question: DataTypes.STRING,
+    question: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     desc: DataTypes.STRING,
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      // allowNull: false
     },
   },
   {

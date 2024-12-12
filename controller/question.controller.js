@@ -1,17 +1,17 @@
 const { Question, User, Comments, sequelize } = require('../models')
 const { Op } = require('sequelize')
 const redis = require('../shared/redisClient');
-const { createTags } = require('../utils/CreateTags/createTags');
+// const { createTags } = require('../utils/CreateTags/createTags');
 
 exports.createQuestion = async (req, res) => {
-  const { question, desc, tags } = req.body;
+  const { question, desc } = req.body;
 
-  const transaction = await sequelize.transaction();
+  // const transaction = await sequelize.transaction();
 
   try {
     
     // const tagIds = await createTags(tags || [], transaction)
-    const tagIds = await createTags(tags, transaction)
+    // const tagIds = await createTags(tags, transaction)
     
     const newQuestion = await Question.create(
       {
@@ -19,15 +19,13 @@ exports.createQuestion = async (req, res) => {
         desc,
         userId: req.user.id,
       },
-      { transaction }
     );
     
-    await newQuestion.addTags(tagIds, { transaction })
-    await transaction.commit()
+    // await newQuestion.addTags(tagIds, { transaction })
+    // await transaction.commit()
     
 
     await redis.del('question:all');
-    await transaction.commit();
 
     res.status(201).json(newQuestion);
   } catch (error) {

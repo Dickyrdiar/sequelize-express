@@ -11,11 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Question.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
+      Question.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
       Question.hasMany(models.Comments, { foreignKey: 'questionId', as: 'comments' });
-      Question.associate = (models) => {
-        Question.belongsToMany(models.Tags, { through: 'Tags' })
-      }
+      Question.belongsToMany(models.Tag, { through: 'QuestionTags', as: 'tags' });
     }
   }
   Question.init({
@@ -32,7 +30,6 @@ module.exports = (sequelize, DataTypes) => {
   {
     sequelize,
     modelName: 'Question',
-  }, {
     paranoid: true,
     timestamps: true
   });
